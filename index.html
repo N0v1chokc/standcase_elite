@@ -466,15 +466,14 @@
            ========================================================================== */
         let isVKEnv = false;
 
-        async function initVKBridge() {
+               async function initVKBridge() {
             try {
                 if (window.vkBridge && typeof window.vkBridge.send === 'function') {
-                    await window.vkBridge.send('VKWebAppInit');
-                    const params = new URLSearchParams(window.location.search);
-                    const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
-                    if (params.has('vk_app_id') || hashParams.has('vk_app_id') || window.parent !== window) {
+                    const initRes = await window.vkBridge.send('VKWebAppInit');
+                    if (initRes && initRes.result) {
                         isVKEnv = true;
                     }
+
                     if (isVKEnv) {
                         try {
                             const userInfo = await window.vkBridge.send('VKWebAppGetUserInfo');
