@@ -506,6 +506,36 @@
                 return false;
             }
         }
+		
+		let activeBannerHeight = 0;
+
+		async function showBottomBanner() {
+			if (!isVKEnv || !window.vkBridge) return;
+			try {
+				const res = await window.vkBridge.send('VKWebAppShowBannerAd', {
+					banner_location: 'bottom'
+				});
+				// Если баннер успешно показался, VK возвращает его реальную высоту (обычно 50-60px)
+				if (res && res.result) {
+					activeBannerHeight = res.banner_height || 60;
+					fitGameToScreen(); // Пересчитываем размер окна игры, чтобы ничего не перекрывалось
+				}
+			} catch (e) {
+				console.warn('[VK Banner] Ошибка показа баннера:', e);
+			}
+		}
+
+		async function hideBottomBanner() {
+			if (!isVKEnv || !window.vkBridge) return;
+			try {
+				await window.vkBridge.send('VKWebAppHideBannerAd');
+				activeBannerHeight = 0;
+				fitGameToScreen(); // Возвращаем игре полную высоту экрана
+			} catch (e) {
+				console.warn('[VK Banner] Ошибка скрытия баннера:', e);
+			}
+		}
+
 
         async function claimRewardGold() {
             SoundEngine.playClick();
@@ -1990,7 +2020,14 @@
            ========================================================================== */
         function goScreen(name) {
             SoundEngine.playClick();
-            if (name !== 'range') stopRangeTimer();
+            if (name === 'range') {
+				hideBottomBanner(); // Убираем баннер, чтобы не мешал стрелять
+			} else {
+				stopRangeTimer();
+				if (activeBannerHeight === 0) {
+					showBottomBanner(); // Возвращаем баннер на всех остальных экранах
+				}
+			}
             
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
@@ -2010,13 +2047,16 @@
             if (name === 'range') startRangeGame();
         }
 
-       async function init() {
+      async function init() {
     fitGameToScreen();
     loadState();
     updateTopBar();
     renderChat();
     renderOperator();
     await initVKBridge();
+    
+    showBottomBanner(); // Показываем строчный баннер при входе в игру
+
     setInterval(() => {
         if (!isSpinning && !wheelSpinning && !upgSpinning) {
             showSafeVKAd('interstitial');
@@ -2024,17 +2064,19 @@
     }, 20 * 60 * 1000);
 }
 
+
 function fitGameToScreen() {
     const vp = document.getElementById('gameViewport');
     if (!vp) return;
 
     const winW = window.innerWidth;
-    const winH = window.innerHeight;
+    // Вычитаем высоту активного баннера из высоты окна
+    const winH = window.innerHeight - activeBannerHeight;
 
-    if (winW >= 950 && winH >= 550) {
+    if (winW >= 950 && winH >= 500) {
         vp.style.transform = 'none';
         vp.style.width = '100vw';
-        vp.style.height = '100vh';
+        vp.style.height = winH + 'px';
         vp.style.left = '0px';
         vp.style.top = '0px';
         return;
@@ -2050,6 +2092,7 @@ function fitGameToScreen() {
     vp.style.left = '0px';
     vp.style.top = '0px';
 }
+
 
 
         window.addEventListener('resize', fitGameToScreen);
