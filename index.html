@@ -551,10 +551,11 @@
         }
 
         const GOLD_PACKS = [
-            { id: 'gold_pack_5000',  gold: 5000,  votes: 20, title: '5 000 G',  badge: '' },
-            { id: 'gold_pack_10000', gold: 10000, votes: 35, title: '10 000 G', badge: 'ПОПУЛЯРНО' },
-            { id: 'gold_pack_30000', gold: 30000, votes: 90, title: '30 000 G', badge: 'ВЫГОДНО' }
+            { id: 'gold_pack_10000',  gold: 10000,  votes: 10, title: '10 000 G',  badge: 'ВЫБОР ИГРОКОВ' },
+            { id: 'gold_pack_30000',  gold: 30000,  votes: 25, title: '30 000 G',  badge: 'ПОПУЛЯРНО' },
+            { id: 'gold_pack_100000', gold: 100000, votes: 70, title: '100 000 G', badge: 'ВЫГОДНО' }
         ];
+
 
         let isPaymentProcessing = false;
 
@@ -838,16 +839,16 @@
         
 		    // RIVAL
 			{ id: 'riv_jkommando_floral', weapon: 'jKommando "Floral"', skin: 'Rival', type: 'knife', rarity: 'arcane', price: 7771.50, c1: '#ec4899', c2: '#831843' },
-			{ id: 'riv_jkommando_reaper', weapon: 'jKommando "Reaper"', skin: 'Rival', type: 'knife', rarity: 'arcane', price: 4769.70, c1: '#ec4899', c2: '#831843' },
-			{ id: 'riv_jkommando_luxury', weapon: 'jKommando "Luxury"', skin: 'Rival', type: 'knife', rarity: 'arcane', price: 4718.94, c1: '#ec4899', c2: '#831843' },
-			{ id: 'riv_jkommando_ancient', weapon: 'jKommando "Ancient"', skin: 'Rival', type: 'knife', rarity: 'arcane', price: 3333.33, c1: '#ec4899', c2: '#831843' },
-			{ id: 'riv_awm_genesis', weapon: 'AWM "Genesis"', skin: 'Rival', type: 'awm', rarity: 'arcane', price: 2427.00, c1: '#ef4444', c2: '#7f1d1d' },
-			{ id: 'riv_ump45_beast', weapon: 'UMP45 "Beast"', skin: 'Rival', type: 'smg', rarity: 'arcane', price: 924.00, c1: '#ef4444', c2: '#7f1d1d' },
-			{ id: 'riv_akr_necromancer', weapon: 'AKR "Necromancer"', skin: 'Rival', type: 'akr', rarity: 'legendary', price: 1080.00, c1: '#a855f7', c2: '#6b21a8' },
-			{ id: 'riv_mp7_arcade', weapon: 'MP7 "Arcade"', skin: 'Rival', type: 'smg', rarity: 'legendary', price: 407.43, c1: '#a855f7', c2: '#6b21a8' },
+			{ id: 'riv_jkommando_reaper', weapon: 'jKommando "Reaper"', skin: 'Rival', type: 'knife', rarity: 'arcane', price: 5769.70, c1: '#ec4899', c2: '#831843' },
+			{ id: 'riv_jkommando_luxury', weapon: 'jKommando "Luxury"', skin: 'Rival', type: 'knife', rarity: 'arcane', price: 5718.94, c1: '#ec4899', c2: '#831843' },
+			{ id: 'riv_jkommando_ancient', weapon: 'jKommando "Ancient"', skin: 'Rival', type: 'knife', rarity: 'arcane', price: 4333.33, c1: '#ec4899', c2: '#831843' },
+			{ id: 'riv_awm_genesis', weapon: 'AWM "Genesis"', skin: 'Rival', type: 'awm', rarity: 'arcane', price: 3427.00, c1: '#ef4444', c2: '#7f1d1d' },
+			{ id: 'riv_ump45_beast', weapon: 'UMP45 "Beast"', skin: 'Rival', type: 'smg', rarity: 'arcane', price: 1624.00, c1: '#ef4444', c2: '#7f1d1d' },
+			{ id: 'riv_akr_necromancer', weapon: 'AKR "Necromancer"', skin: 'Rival', type: 'akr', rarity: 'legendary', price: 1580.00, c1: '#a855f7', c2: '#6b21a8' },
+			{ id: 'riv_mp7_arcade', weapon: 'MP7 "Arcade"', skin: 'Rival', type: 'smg', rarity: 'legendary', price: 707.43, c1: '#a855f7', c2: '#6b21a8' },
 			{ id: 'riv_g22_frost', weapon: 'G22 "Frost Wyrm"', skin: 'Rival', type: 'pistol', rarity: 'legendary', price: 312.00, c1: '#a855f7', c2: '#6b21a8' },
 			
-			{ id: 'riv_deagle_dragon', weapon: 'Desert Eagle "Dragon Glass"', skin: 'Rival', type: 'pistol', rarity: 'epic', price: 195.36, c1: '#a855f7', c2: '#6b21a8' },
+			{ id: 'riv_deagle_dragon', weapon: 'Desert Eagle "Dragon Glass"', skin: 'Rival', type: 'pistol', rarity: 'epic', price: 367.36, c1: '#a855f7', c2: '#6b21a8' },
 			{ id: 'riv_mp7_offroad', weapon: 'MP7 "Offroad"', skin: 'Rival', type: 'smg', rarity: 'epic', price: 139.38, c1: '#a855f7', c2: '#6b21a8' },
 			{ id: 'riv_m4_grandprix', weapon: 'M4 "Grand Prix"', skin: 'Rival', type: 'm4', rarity: 'epic', price: 103.44, c1: '#a855f7', c2: '#6b21a8' },
 			{ id: 'riv_m40_beagle', weapon: 'M40 "Beagle"', skin: 'Rival', type: 'awm', rarity: 'rare', price: 37.77, c1: '#3b82f6', c2: '#1e3a8a' },
@@ -864,7 +865,7 @@
             { id: 'c_valor_case', name: 'Valor Case', desc: 'Кейс коллекции Valor', price: 100, ad: false, boxType: 'case', c1: '#f59e0b', c2: '#b45309', pool: ['val_m9_poison', 'val_m9_twilight', 'val_m9_sketch', 'val_m9_citrine', 'val_m4a1_treasure', 'val_g22_twilight', 'val_akr_sketch', 'val_p350_emberbird', 'val_mallard_snake', 'val_m16_accuracy', 'val_m4_retro', 'val_uzi_zenith', 'val_mp7_magma', 'val_val_vertex', 'val_fs_flashing', 'val_p90_horizon'] },
             { id: 'c_dynasty_case', name: 'Dynasty Case', desc: 'Кейс коллекции Dynasty', price: 100, ad: false, boxType: 'case', c1: '#8b5cf6', c2: '#4c1d95', pool: ['dyn_mantis_genesis', 'dyn_mantis_nest', 'dyn_mantis_eclipse', 'dyn_mantis_citrine','dyn_akr_genesis', 'dyn_uzi_overdrive_r', 'dyn_m4a1_overdrive', 'dyn_deagle_eclipse', 'dyn_p90_noir', 'dyn_g22_briar', 'dyn_p350_ooze', 'dyn_awm_sylvan', 'dyn_fnfal_pro', 'dyn_m16_mayhem', 'dyn_uzi_skull', 'dyn_sm1014_wasp'] },
             { id: 'c_chameleon_case', name: 'Chameleon Case', desc: 'Кейс коллекции Chameleon', price: 100, ad: false, boxType: 'case', c1: '#10b981', c2: '#065f46', pool: ['cha_gloves_dragon', 'cha_gloves_mimicry', 'cha_gloves_stream', 'cha_gloves_artificer', 'cha_awm_hohei', 'cha_val_gilded', 'cha_akr12_mimicry', 'cha_mp7_fright', 'cha_tec9_disguise', 'cha_usp_ghosts', 'cha_m4_flock', 'cha_m40_disguise', 'cha_m4a1_stainless', 'cha_deagle_violet', 'cha_g22_flock', 'cha_val_joker'] },
-            { id: 'c_nameless_case', name: 'Nameless Case', desc: 'Эксклюзивный кейс', price: 100000, ad: false, boxType: 'case', c1: '#eab308', c2: '#854d0e', pool: ['nam_butterfly_twilight', 'nam_karambit_gold', 'nam_sting_mimicry', 'nam_awm_treasure', 'nam_flash_solar', 'nam_deagle_aureate', 'nam_awm_sport_v2', 'nam_dualdaggers_harmony', 'nam_mac10_ruby', 'nam_mallard_progold', 'nam_usp_genesis', 'nam_fnfal_leather', 'nam_g22_relic', 'nam_charm_ochpochmak', 'nam_charm_blackspot', 'nam_charm_v2'] },
+            { id: 'c_nameless_case', name: 'Nameless Case', desc: 'Эксклюзивный кейс', price: 75000, ad: false, boxType: 'case', c1: '#eab308', c2: '#854d0e', pool: ['nam_butterfly_twilight', 'nam_karambit_gold', 'nam_sting_mimicry', 'nam_awm_treasure', 'nam_flash_solar', 'nam_deagle_aureate', 'nam_awm_sport_v2', 'nam_dualdaggers_harmony', 'nam_mac10_ruby', 'nam_mallard_progold', 'nam_usp_genesis', 'nam_fnfal_leather', 'nam_g22_relic', 'nam_charm_ochpochmak', 'nam_charm_blackspot', 'nam_charm_v2'] },
             
             { id: 'c_rainbow_sticker', name: 'Rainbow Sticker Pack', desc: 'Набор стикеров', price: 60, ad: false, boxType: 'box', c1: '#ec4899', c2: '#831843', pool: ['rb_dragon', 'rb_samurai', 'rb_the_king', 'rb_nice_skill_swap', 'rb_awm_master_color', 'rb_28_swap', 'rb_entry_kill_color', 'rb_v2_pro_swap', 'rb_with_love', 'rb_murder', 'rb_deagle_master_swap', 'rb_strike_swap', 'rb_v2', 'rb_headshot_zone', 'rb_pro', 'rb_nice_skill', 'rb_spare_gold', 'rb_awm_master', 'rb_deagle_master', 'rb_lucky_star'] },
             { id: 'c_rewind_charm', name: 'Rewind Charm Pack', desc: 'Набор брелоков', price: 300, ad: false, boxType: 'box', c1: '#f59e0b', c2: '#92400e', pool: ['rw_gold_skull', 'rw_lighter', 'rw_low_hp', 'rw_metal_rat', 'rw_plush_adam', 'rw_bomb', 'rw_origin_box', 'rw_mini_kit', 'rw_pro', 'rw_lucky', 'rw_gold_coin', 'rw_so2_tag'] },
@@ -872,7 +873,7 @@
 			id: 'c_rival_case', 
 			name: 'Rival Case', 
 			desc: 'Кейс коллекции Rival', 
-			price: 1500, 
+			price: 1000, 
 			ad: false, 
 			boxType: 'case', 
 			c1: '#64748b', 
@@ -1465,13 +1466,13 @@
             toast(`Награда увеличена до ${state.clickReward} G!`);
         }
 
-        function renderUpgraderStage(stage) {
+              function renderUpgraderStage(stage) {
             const selItem = state.inventory.find(i => i.uid === upgSelectedUid);
             let chance = 0;
             
             if (selItem && upgTargetDb) {
                 chance = Math.round((selItem.price / upgTargetDb.price) * 100);
-                if (chance > 95) chance = 95;
+                if (chance > 70) chance = 70;
                 if (chance < 1) chance = 1;
             }
 
@@ -1505,7 +1506,10 @@
             `;
         }
 
-        function openUpgPicker(mode) {
+
+         
+
+                function openUpgPicker(mode) {
             if (mode === 'source') {
                 if (!state.inventory.length) { toast('Инвентарь пуст!'); return; }
                 const listHtml = state.inventory.filter(i => i.type !== 'agent' && i.type !== 'case').map(item => `
@@ -1517,42 +1521,75 @@
                 `).join('');
                 openModal(`<h3 style="margin-bottom:10px;">Выберите свой скин</h3><div class="items-grid" style="max-height:60vh; overflow-y:auto;">${listHtml}</div><button class="btn-ui dark" style="margin-top:12px;" onclick="closeModal()">Отмена</button>`);
             } else {
-                const listHtml = ITEMS_DB.filter(i => i.type !== 'agent' && i.type !== 'case').sort((a,b) => a.price - b.price).map(item => `
+                const selItem = state.inventory.find(i => i.uid === upgSelectedUid);
+                if (!selItem) {
+                    toast('Сначала выберите свой скин!');
+                    return;
+                }
+
+                const moreExpensiveItems = ITEMS_DB
+                    .filter(i => i.type !== 'agent' && i.type !== 'case' && i.price > selItem.price)
+                    .sort((a, b) => a.price - b.price);
+
+                if (!moreExpensiveItems.length) {
+                    toast('Нет скинов дороже выбранного!');
+                    return;
+                }
+
+                const listHtml = moreExpensiveItems.map(item => `
                     <div class="skin-card rc-${item.rarity}" onclick="selectUpgItem('${item.id}', 'target')">
                         ${renderItemVisual(item)}
                         <div style="font-size:11px; font-weight:800;">${item.weapon}</div>
                         <div style="font-size:10px; color:var(--gold);">${item.price} G</div>
                     </div>
                 `).join('');
-                openModal(`<h3 style="margin-bottom:10px;">Желаемый скин</h3><div class="items-grid" style="max-height:60vh; overflow-y:auto;">${listHtml}</div><button class="btn-ui dark" style="margin-top:12px;" onclick="closeModal()">Отмена</button>`);
+                openModal(`<h3 style="margin-bottom:10px;">Желаемый скин (дороже ${selItem.price} G)</h3><div class="items-grid" style="max-height:60vh; overflow-y:auto;">${listHtml}</div><button class="btn-ui dark" style="margin-top:12px;" onclick="closeModal()">Отмена</button>`);
             }
         }
 
         function selectUpgItem(idOrUid, mode) {
-            if (mode === 'source') upgSelectedUid = idOrUid;
-            else upgTargetDb = ITEMS_DB.find(i => i.id === idOrUid);
+            if (mode === 'source') {
+                upgSelectedUid = idOrUid;
+                const newSrc = state.inventory.find(i => i.uid === idOrUid);
+                if (upgTargetDb && newSrc && upgTargetDb.price <= newSrc.price) {
+                    upgTargetDb = null;
+                }
+            } else {
+                upgTargetDb = ITEMS_DB.find(i => i.id === idOrUid);
+            }
             closeModal();
             renderUpgraderStage(document.getElementById('mgStageContent'));
         }
-
-        function runUpgrade() {
+		
+		
+		    function runUpgrade() {
             if (upgSpinning) return;
             const idx = state.inventory.findIndex(i => i.uid === upgSelectedUid);
             if (idx === -1 || !upgTargetDb) return;
 
             const selItem = state.inventory[idx];
-            let chance = Math.round((selItem.price / upgTargetDb.price) * 100);
-            if (chance > 95) chance = 95;
-            if (chance < 1) chance = 1;
+            
+            // 1. Показанный игроку шанс (максимум 70%)
+            let displayChance = Math.round((selItem.price / upgTargetDb.price) * 100);
+            if (displayChance > 70) displayChance = 70;
+            if (displayChance < 1) displayChance = 1;
+
+            // 2. Реальный скрытый шанс (x1.2 -> максимум 84%)
+            const realChance = Math.min(84, displayChance * 1.2);
             
             upgSpinning = true;
             SoundEngine.playTick();
             
             const arrow = document.getElementById('upgArrow');
-            const winDegrees = (chance / 100) * 360;
-            const isWin = Math.random() * 100 <= chance;
+            const winDegrees = (displayChance / 100) * 360;
             
-            let targetAngle = isWin ? (Math.random() * winDegrees) : (winDegrees + Math.random() * (360 - winDegrees));
+            // Победа считается по скрытому шансу
+            const isWin = Math.random() * 100 <= realChance;
+            
+            // Стрелка приземляется в зелёную зону при победе или в красную при проигрыше
+            let targetAngle = isWin
+                ? (Math.random() * (winDegrees - 2) + 1)
+                : (winDegrees + 1 + Math.random() * (360 - winDegrees - 2));
             const totalRotation = 360 * 5 + targetAngle;
             
             if (arrow) arrow.style.transform = `translateX(-50%) rotate(${totalRotation}deg)`;
@@ -1577,6 +1614,9 @@
                 renderUpgraderStage(document.getElementById('mgStageContent'));
             }, 4000);
         }
+
+
+
 
         function renderBattleStage(stage) {
             stage.innerHTML = `
@@ -1804,36 +1844,66 @@
             renderContracts();
         }
 
-        function executeContract() {
+                             function executeContract() {
             if (contractSelected.length !== contractNeed) return;
             const order = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'arcane'];
             const curRarity = contractSelected[0].rarity;
-            const nextRarity = order[Math.min(order.length - 1, order.indexOf(curRarity) + 1)];
-            const targetClass = getItemClass(contractSelected[0].type);
+			const nextRarity = order[Math.min(order.length - 1, order.indexOf(curRarity) + 1)];
+			const targetClass = getItemClass(contractSelected[0].type);
+
             
-            let candidates = ITEMS_DB.filter(i => 
+            let nextCandidates = ITEMS_DB.filter(i => 
                 i.rarity === nextRarity && 
                 getItemClass(i.type) === targetClass &&
                 !['knife', 'gloves', 'nameless'].includes(i.rarity)
             );
 
-            if (!candidates.length) {
+            if (!nextCandidates.length) {
                 toast('Нет подходящих скинов для крафта. Возврат предметов.');
                 return;
+            }
+
+            const totalInputPrice = contractSelected.reduce((sum, item) => sum + item.price, 0);
+
+            // Скины следующей редкости, которые дороже суммы вложения
+            let profitPool = nextCandidates.filter(i => i.price >= totalInputPrice);
+            // Скины следующей редкости, которые дешевле суммы вложения
+            let lossPool = nextCandidates.filter(i => i.price < totalInputPrice);
+
+            // Если в следующей редкости вообще нет скинов дешевле вложения — берём для слива скины текущей редкости дешевле вложения
+            if (lossPool.length === 0) {
+                lossPool = ITEMS_DB.filter(i => 
+                    i.rarity === curRarity && 
+                    getItemClass(i.type) === targetClass &&
+                    i.price < totalInputPrice &&
+                    !['knife', 'gloves', 'nameless'].includes(i.rarity)
+                );
+            }
+
+            // Если все скины следующей редкости наоборот дешевле (редкий случай)
+            if (profitPool.length === 0) {
+                profitPool = nextCandidates;
+            }
+
+            let selectedPool = nextCandidates;
+            if (profitPool.length > 0 && lossPool.length > 0) {
+                selectedPool = (Math.random() < 0.50) ? profitPool : lossPool;
             }
 
             const usedUids = contractSelected.map(i => i.uid);
             state.inventory = state.inventory.filter(i => !usedUids.includes(i.uid));
             contractSelected = [];
 
-            const resultDb = candidates[Math.floor(Math.random() * candidates.length)];
+            const resultDb = selectedPool[Math.floor(Math.random() * selectedPool.length)];
             const newItem = createInvItem(resultDb);
             state.inventory.push(newItem);
             
             saveState(); renderContracts(); updateTopBar();
-            SoundEngine.playWin(nextRarity);
-            toast(`Контракт выполнен! Получен: ${newItem.weapon}`);
+            SoundEngine.playWin(newItem.rarity);
+            toast(`Контракт выполнен! Получен: ${newItem.weapon} (${newItem.price} G)`);
         }
+
+
 
         /* ==========================================================================
            11. ПАСС, ЛИДЕРЫ И ЧАТ
