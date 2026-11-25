@@ -322,6 +322,21 @@
     color: #fff;
     border-color: var(--red-btn);
 }
+/* Улучшение читаемости на экранах смартфонов */
+@media (max-height: 550px) {
+    .top-bar { height: 42px; padding: 0 10px; }
+    .top-title { font-size: 13px; }
+    .curr-pill { padding: 3px 8px; font-size: 12px; }
+    .btn-ad-top { padding: 4px 8px; font-size: 11px; }
+    
+    .cases-grid, .items-grid { 
+        grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); 
+        gap: 8px; 
+    }
+    .skin-card, .case-card { padding: 6px; }
+    .skin-img { height: 52px; }
+    .case-img { height: 65px; }
+}
 
 
 
@@ -605,11 +620,13 @@ async function showBottomBanner() {
         const res = await window.vkBridge.send('VKWebAppShowBannerAd', {
             banner_location: 'bottom'
         });
-        if (res && res.result) {
-            isBannerVisible = true;
-            activeBannerHeight = res.banner_height || 60;
-            fitGameToScreen();
-        }
+       if (res && res.result) {
+			isBannerVisible = true;
+			
+			activeBannerHeight = (res.banner_height && res.banner_height < 120) ? res.banner_height : 56;
+			fitGameToScreen();
+		}
+
     } catch (e) {
         console.warn('[VK Banner] Баннер недоступен:', e);
     }
@@ -2285,7 +2302,23 @@ async function confirmBuyCase() {
             if (name === 'range') startRangeGame();
         }
 
-      async function init() {
+     let adPending = false; // Флаг: пора показать рекламу, как только игрок освободится
+
+function isPlayerBusy() {
+    // Проверяем: крутится ли кейс, колесо, апгрейд, идет ли тир или открыто ли окно с наградой
+    const isModalOpen = document.getElementById('mainModal')?.classList.contains('open');
+    return isSpinning || wheelSpinning || upgSpinning || rangeActive || isModalOpen;
+}
+
+async function tryShowScheduledAd() {
+    if (!adPending) return;
+    if (isPlayerBusy()) return; // Ждем, пока игрок закончит действие
+
+    adPending = false;
+    await showSafeVKAd('interstitial');
+}
+
+async function init() {
     fitGameToScreen();
     loadState();
     updateTopBar();
@@ -2293,14 +2326,22 @@ async function confirmBuyCase() {
     renderOperator();
     await initVKBridge();
     
-    showBottomBanner(); // Показываем строчный баннер при входе в игру
+    showBottomBanner();
 
+    // Каждые 5 минут (5 * 60 * 1000 мс) ставим рекламу в очередь
     setInterval(() => {
-        if (!isSpinning && !wheelSpinning && !upgSpinning) {
-            showSafeVKAd('interstitial');
+        adPending = true;
+        tryShowScheduledAd();
+    }, 5 * 60 * 1000);
+
+    // Каждые 2 секунды проверяем: если реклама ждет в очереди и игрок освободился — показываем
+    setInterval(() => {
+        if (adPending && !isPlayerBusy()) {
+            tryShowScheduledAd();
         }
-    }, 20 * 60 * 1000);
+    }, 2000);
 }
+
 
 
 function fitGameToScreen() {
@@ -2308,10 +2349,15 @@ function fitGameToScreen() {
     if (!vp) return;
 
     const winW = window.innerWidth;
-    // Вычитаем высоту активного баннера из высоты окна
-    const winH = window.innerHeight - activeBannerHeight;
+    // Если баннер активен, берем его реальную высоту, иначе 0
+    const bannerOffset = isBannerVisible ? activeBannerHeight : 0;
+    const winH = Math.max(200, window.innerHeight - bannerOffset);
 
-    if (winW >= 950 && winH >= 500) {
+    // Определяем, мобильное ли это устройство в горизонтальном режиме
+    const isMobileLandscape = winW < 950 || winH < 500;
+
+    if (!isMobileLandscape) {
+        // Для ПК и больших планшетов — без масштабирования
         vp.style.transform = 'none';
         vp.style.width = '100vw';
         vp.style.height = winH + 'px';
@@ -2320,7 +2366,8 @@ function fitGameToScreen() {
         return;
     }
 
-    const baseH = 540;
+    // Для телефонов: уменьшаем базовую высоту до 410px, чтобы кнопки и шрифт стали крупными и читаемыми
+    const baseH = 410;
     const scale = winH / baseH;
     const dynamicW = Math.ceil(winW / scale);
 
@@ -2330,6 +2377,7 @@ function fitGameToScreen() {
     vp.style.left = '0px';
     vp.style.top = '0px';
 }
+
 
 
 
