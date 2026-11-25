@@ -49,12 +49,43 @@
         /* ОСНОВНАЯ СЕТКА */
         .app-body { flex: 1; display: flex; overflow: hidden; position: relative; }
         
+      
         /* НОВОЕ ШИРОКОЕ МЕНЮ (Как в Standoff 2) */
-        .side-nav { width: 220px; background: rgba(13, 18, 27, 0.85); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 10px; gap: 6px; z-index: 40; flex-shrink: 0; }
-        .side-btn { width: 100%; height: 48px; border-radius: 8px; background: transparent; border: none; color: var(--text-dim); font-size: 14px; font-weight: 700; cursor: pointer; display: flex; flex-direction: row; align-items: center; justify-content: flex-start; padding: 0 16px; gap: 12px; transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.5px; }
-        .side-btn:hover { background: rgba(255, 255, 255, 0.05); color: var(--text-main); }
-        .side-btn.active { background: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--gold-light); color: #fff; }
-        .side-btn .lbl { font-size: 13px; }
+.side-nav { 
+    width: 245px; 
+    background: rgba(13, 18, 27, 0.85); 
+    border-right: 1px solid var(--border); 
+    display: flex; 
+    flex-direction: column; 
+    padding: 20px 12px; 
+    gap: 10px; 
+    z-index: 40; 
+    flex-shrink: 0; 
+}
+.side-btn { 
+    width: 100%; 
+    height: 58px; 
+    border-radius: 10px; 
+    background: transparent; 
+    border: none; 
+    color: var(--text-dim); 
+    font-size: 18px; 
+    font-weight: 800; 
+    cursor: pointer; 
+    display: flex; 
+    flex-direction: row; 
+    align-items: center; 
+    justify-content: flex-start; 
+    padding: 0 18px; 
+    gap: 14px; 
+    transition: all 0.15s; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px; 
+}
+.side-btn:hover { background: rgba(255, 255, 255, 0.05); color: var(--text-main); }
+.side-btn.active { background: rgba(255, 255, 255, 0.1); border-left: 4px solid var(--gold-light); color: #fff; }
+.side-btn .lbl { font-size: 15px; }
+
         .side-spacer { flex: 1; }
         
         .main-view { flex: 1; overflow-y: auto; padding: 14px; position: relative; }
@@ -233,7 +264,7 @@
         }
 
         /* Убираем старое перестроение в колонку на узких экранах */
-        .side-nav { width: 190px; padding: 14px 8px; }
+        .side-nav { width: 225px; padding: 16px 10px; }
         .lobby-grid { grid-template-columns: 260px 1fr 240px; height: 100%; }
         .operator-img { max-width: 340px; max-height: 440px; }
 
@@ -257,13 +288,41 @@
 		
 		
 		@media (max-height: 550px) {
-    .side-nav { width: 150px; padding: 8px 6px; gap: 3px; }
-    .side-btn { height: 38px; padding: 0 10px; font-size: 12px; gap: 8px; }
-    .side-btn .lbl { font-size: 11px; }
+		.side-nav { width: 185px; padding: 10px 8px; gap: 6px; }
+		.side-btn { height: 46px; padding: 0 12px; font-size: 15px; gap: 10px; }
+		.side-btn .lbl { font-size: 13px; }
+
     .lobby-grid { grid-template-columns: 230px 1fr 210px; gap: 10px; min-height: 0; }
     .operator-img { max-height: 340px; }
     .main-view { padding: 10px; }
 }
+
+/* Крестик закрытия в правом верхнем углу окна */
+.modal-box { position: relative; }
+.modal-close-x {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.15s;
+}
+.modal-close-x:hover {
+    background: var(--red-btn);
+    color: #fff;
+    border-color: var(--red-btn);
+}
+
 
 
     </style>
@@ -461,165 +520,202 @@
                 /* ==========================================================================
            1. ИНТЕГРАЦИЯ С VK BRIDGE И ОПЛАТА
            ========================================================================== */
-               /* ==========================================================================
-           1. ИНТЕГРАЦИЯ С VK BRIDGE И ОПЛАТА
-           ========================================================================== */
-        let isVKEnv = false;
+               
 
-               async function initVKBridge() {
-            try {
-                if (window.vkBridge && typeof window.vkBridge.send === 'function') {
-                    const initRes = await window.vkBridge.send('VKWebAppInit');
-                    if (initRes && initRes.result) {
-                        isVKEnv = true;
+let isVKEnv = false;
+let activeBannerHeight = 0;
+let isBannerVisible = false;
+let lastBannerAttempt = 0;
+
+// 1. Инициализация и предзагрузка рекламы
+async function initVKBridge() {
+    try {
+        if (window.vkBridge && typeof window.vkBridge.send === 'function') {
+            const initRes = await window.vkBridge.send('VKWebAppInit');
+            if (initRes && initRes.result) {
+                isVKEnv = true;
+            }
+
+            if (isVKEnv) {
+                // Получаем имя игрока
+                try {
+                    const userInfo = await window.vkBridge.send('VKWebAppGetUserInfo');
+                    if (userInfo && userInfo.first_name) {
+                        const fullName = `${userInfo.first_name} ${userInfo.last_name || ''}`.trim();
+                        document.getElementById('playerName').textContent = fullName;
                     }
+                } catch (uErr) {}
 
-                    if (isVKEnv) {
-                        try {
-                            const userInfo = await window.vkBridge.send('VKWebAppGetUserInfo');
-                            if (userInfo && userInfo.first_name) {
-                                document.getElementById('playerName').textContent = `${userInfo.first_name} ${userInfo.last_name || ''}`.trim();
-                            }
-                        } catch (uErr) {}
-                    }
-                }
-            } catch (e) {
-                console.warn('[VK Bridge] Локальный запуск вне ВК.');
-                isVKEnv = false;
+                // Заранее кэшируем видеорекламу (решает проблему с негрузкой роликов на телефонах)
+                preloadVKAds();
             }
         }
+    } catch (e) {
+        console.warn('[VK Bridge] Локальный запуск вне ВК.');
+        isVKEnv = false;
+    }
+}
 
-        async function showSafeVKAd(adFormat) {
-            SoundEngine.setAdMute(true);
-            try {
-                if (isVKEnv && window.vkBridge) {
-                    const res = await window.vkBridge.send('VKWebAppShowNativeAds', { ad_format: adFormat });
-                    SoundEngine.setAdMute(false);
-                    return Boolean(res && res.result === true);
-                }
-                SoundEngine.setAdMute(false);
-                return false;
-            } catch (err) {
-                console.warn('[VK Ads] Реклама не показана:', err);
-                SoundEngine.setAdMute(false);
-                return false;
-            }
-        }
-		
-		let activeBannerHeight = 0;
+// Фоновая предзагрузка рекламы
+async function preloadVKAds() {
+    if (!isVKEnv || !window.vkBridge) return;
+    try {
+        await window.vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'reward' });
+        await window.vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'interstitial' });
+    } catch (e) {
+        // Игнорируем, если сейчас нет доступных роликов
+    }
+}
 
-		async function showBottomBanner() {
-			if (!isVKEnv || !window.vkBridge) return;
-			try {
-				const res = await window.vkBridge.send('VKWebAppShowBannerAd', {
-					banner_location: 'bottom'
-				});
-				// Если баннер успешно показался, VK возвращает его реальную высоту (обычно 50-60px)
-				if (res && res.result) {
-					activeBannerHeight = res.banner_height || 60;
-					fitGameToScreen(); // Пересчитываем размер окна игры, чтобы ничего не перекрывалось
-				}
-			} catch (e) {
-				console.warn('[VK Banner] Ошибка показа баннера:', e);
-			}
-		}
-
-		async function hideBottomBanner() {
-			if (!isVKEnv || !window.vkBridge) return;
-			try {
-				await window.vkBridge.send('VKWebAppHideBannerAd');
-				activeBannerHeight = 0;
-				fitGameToScreen(); // Возвращаем игре полную высоту экрана
-			} catch (e) {
-				console.warn('[VK Banner] Ошибка скрытия баннера:', e);
-			}
-		}
-
-
-        async function claimRewardGold() {
-            SoundEngine.playClick();
-            const ok = await showSafeVKAd('reward');
-            if (ok) {
-                state.gold += 250;
-                saveState(); updateTopBar();
-                SoundEngine.playWin('rare');
-                toast('Начислено +250 G за рекламу!');
-            } else {
-                toast('Реклама не досмотрена.');
-            }
+// 2. Показ видеорекламы с защитой от зависаний звука
+async function showSafeVKAd(adFormat) {
+    if (!isVKEnv || !window.vkBridge) return false;
+    SoundEngine.setAdMute(true);
+    try {
+        // Проверяем, готов ли ролик перед показом
+        const check = await window.vkBridge.send('VKWebAppCheckNativeAds', { ad_format: adFormat });
+        if (!check || !check.result) {
+            SoundEngine.setAdMute(false);
+            return false;
         }
 
-        const GOLD_PACKS = [
-            { id: 'gold_pack_10000',  gold: 10000,  votes: 10, title: '10 000 G',  badge: 'ВЫБОР ИГРОКОВ' },
-            { id: 'gold_pack_30000',  gold: 30000,  votes: 25, title: '30 000 G',  badge: 'ПОПУЛЯРНО' },
-            { id: 'gold_pack_100000', gold: 100000, votes: 70, title: '100 000 G', badge: 'ВЫГОДНО' }
-        ];
+        const res = await window.vkBridge.send('VKWebAppShowNativeAds', { ad_format: adFormat });
+        SoundEngine.setAdMute(false);
+        
+        // После показа сразу кэшируем следующий ролик
+        preloadVKAds();
+        return Boolean(res && res.result === true);
+    } catch (err) {
+        console.warn('[VK Ads] Реклама не показана:', err);
+        SoundEngine.setAdMute(false);
+        return false;
+    }
+}
 
+// 3. Управление нижним баннером без спама запросами
+async function showBottomBanner() {
+    if (!isVKEnv || !window.vkBridge || isBannerVisible) return;
 
-        let isPaymentProcessing = false;
+    // Защита от спама: не запрашиваем баннер чаще чем раз в 30 секунд, если он не загрузился
+    const now = Date.now();
+    if (now - lastBannerAttempt < 30000) return;
+    lastBannerAttempt = now;
 
-        function buyGold() {
-            SoundEngine.playClick();
-            const packsHtml = GOLD_PACKS.map(p => `
-                <button class="btn-ui green" style="padding:14px; position:relative; ${p.badge ? 'border:2px solid var(--gold-light);' : ''}" 
-                        onclick="processVKPayment('${p.id}')">
-                    ${p.badge ? `<span style="position:absolute; top:-9px; right:10px; background:var(--gold); color:#000; font-size:9px; padding:2px 6px; border-radius:4px; font-weight:900;">${p.badge}</span>` : ''}
-                    <div style="font-size:15px; font-weight:900;">${p.title}</div>
-                    <div style="font-size:11px; opacity:0.9; font-weight:700; margin-top:2px;">Цена: ${p.votes} голосов</div>
-                </button>
-            `).join('');
-
-            openModal(`
-                <h3 style="color:var(--gold-light); margin-bottom:6px;">ПОПОЛНЕНИЕ БАЛАНСА</h3>
-                <p style="font-size:12px; color:var(--text-dim); margin-bottom:16px;">Оплата производится голосами ВКонтакте:</p>
-                <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;">${packsHtml}</div>
-                <button class="btn-ui dark" style="width:100%;" onclick="closeModal()">Отмена</button>
-            `);
+    try {
+        const res = await window.vkBridge.send('VKWebAppShowBannerAd', {
+            banner_location: 'bottom'
+        });
+        if (res && res.result) {
+            isBannerVisible = true;
+            activeBannerHeight = res.banner_height || 60;
+            fitGameToScreen();
         }
+    } catch (e) {
+        console.warn('[VK Banner] Баннер недоступен:', e);
+    }
+}
 
-        async function processVKPayment(packId) {
-            if (isPaymentProcessing) return;
-            const pack = GOLD_PACKS.find(p => p.id === packId);
-            if (!pack) return;
-            closeModal();
+async function hideBottomBanner() {
+    if (!isVKEnv || !window.vkBridge || !isBannerVisible) return;
+    try {
+        await window.vkBridge.send('VKWebAppHideBannerAd');
+        isBannerVisible = false;
+        activeBannerHeight = 0;
+        fitGameToScreen();
+    } catch (e) {
+        console.warn('[VK Banner] Ошибка скрытия баннера:', e);
+    }
+}
 
-            const isLocalFile = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            if (!isVKEnv && isLocalFile) {
-                state.gold += pack.gold;
-                saveState(); updateTopBar();
-                SoundEngine.playWin('arcane');
-                toast(`[ЛОКАЛЬНЫЙ ТЕСТ] Начислено ${pack.title}!`);
-                return;
-            }
+async function claimRewardGold() {
+    SoundEngine.playClick();
+    const ok = await showSafeVKAd('reward');
+    if (ok) {
+        state.gold += 250;
+        saveState(); updateTopBar();
+        SoundEngine.playWin('rare');
+        toast('Начислено +250 G за рекламу!');
+    } else {
+        toast('Реклама сейчас недоступна или не досмотрена.');
+    }
+}
 
-            if (!window.vkBridge) {
-                toast('Оплата доступна только внутри ВКонтакте.');
-                return;
-            }
+const GOLD_PACKS = [
+    { id: 'gold_pack_10000',  gold: 10000,  votes: 10, title: '10 000 G',  badge: 'ВЫБОР ИГРОКОВ' },
+    { id: 'gold_pack_30000',  gold: 30000,  votes: 25, title: '30 000 G',  badge: 'ПОПУЛЯРНО' },
+    { id: 'gold_pack_100000', gold: 100000, votes: 70, title: '100 000 G', badge: 'ВЫГОДНО' }
+];
 
-            isPaymentProcessing = true;
-            SoundEngine.setAdMute(true);
+let isPaymentProcessing = false;
 
-            try {
-                const data = await window.vkBridge.send('VKWebAppShowOrderBox', { type: 'item', item: pack.id });
-                SoundEngine.setAdMute(false);
-                isPaymentProcessing = false;
+function buyGold() {
+    SoundEngine.playClick();
+    const packsHtml = GOLD_PACKS.map(p => `
+        <button class="btn-ui green" style="padding:14px; position:relative; ${p.badge ? 'border:2px solid var(--gold-light);' : ''}" 
+                onclick="processVKPayment('${p.id}')">
+            ${p.badge ? `<span style="position:absolute; top:-9px; right:10px; background:var(--gold); color:#000; font-size:9px; padding:2px 6px; border-radius:4px; font-weight:900;">${p.badge}</span>` : ''}
+            <div style="font-size:15px; font-weight:900;">${p.title}</div>
+            <div style="font-size:11px; opacity:0.9; font-weight:700; margin-top:2px;">Цена: ${p.votes} голосов</div>
+        </button>
+    `).join('');
 
-                if (data && data.success) {
-                    state.gold += pack.gold;
-                    saveState(); updateTopBar();
-                    SoundEngine.playWin('arcane');
-                    toast(`Оплата прошла! Начислено +${pack.title}`);
-                } else {
-                    toast('Оплата не была завершена.');
-                }
-            } catch (error) {
-                SoundEngine.setAdMute(false);
-                isPaymentProcessing = false;
-                const errCode = error?.error_data?.error_code;
-                toast(errCode === 4 ? 'Покупка отменена.' : 'Платежи временно недоступны.');
-            }
+    openModal(`
+        <button class="modal-close-x" onclick="closeModal()">✕</button>
+        <h3 style="color:var(--gold-light); margin-bottom:6px; padding-right:24px;">ПОПОЛНЕНИЕ БАЛАНСА</h3>
+        <p style="font-size:12px; color:var(--text-dim); margin-bottom:16px;">Оплата производится голосами ВКонтакте:</p>
+        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;">${packsHtml}</div>
+        <button class="btn-ui dark" style="width:100%;" onclick="closeModal()">Отмена</button>
+    `);
+}
+
+
+// 4. Безопасная оплата без дыр и с поддержкой старых версий ВК
+async function processVKPayment(packId) {
+    if (isPaymentProcessing) return;
+    const pack = GOLD_PACKS.find(p => p.id === packId);
+    if (!pack) return;
+    closeModal();
+
+    if (!isVKEnv || !window.vkBridge) {
+        toast('Покупки доступны только внутри приложения ВКонтакте.');
+        return;
+    }
+
+    isPaymentProcessing = true;
+    SoundEngine.setAdMute(true);
+
+    try {
+        const data = await window.vkBridge.send('VKWebAppShowOrderBox', { 
+            type: 'item', 
+            item: String(pack.id) 
+        });
+        
+        SoundEngine.setAdMute(false);
+        isPaymentProcessing = false;
+
+        // Проверяем все возможные форматы успешного ответа от iOS/Android/Web
+        const isSuccess = data && (
+            data.success === true || 
+            data.status === 'chargeSuccess' || 
+            data.result === true
+        );
+
+        if (isSuccess) {
+            state.gold += pack.gold;
+            saveState(); updateTopBar();
+            SoundEngine.playWin('arcane');
+            toast(`Оплата прошла! Начислено +${pack.title}`);
+        } else {
+            toast('Оплата не была завершена.');
         }
+    } catch (error) {
+        SoundEngine.setAdMute(false);
+        isPaymentProcessing = false;
+        const errCode = error?.error_data?.error_code;
+        toast(errCode === 4 ? 'Покупка отменена.' : 'Платежи временно недоступны.');
+    }
+}
+
 
 
         /* ==========================================================================
@@ -977,26 +1073,91 @@
         }
 
 
-        async function buyCase(caseId) {
-            const c = CASES_DB.find(x => x.id === caseId);
-            if (!c) return;
+       let tempBuyCase = null;
+let tempBuyCaseQty = 1;
 
-            if (c.ad) {
-                const ok = await showSafeVKAd('reward');
-                if (!ok) { toast('Реклама не досмотрена.'); return; }
-            } else {
-                if (state.gold < c.price) { toast('Недостаточно голды!'); return; }
-                state.gold -= c.price;
-            }
+function buyCase(caseId) {
+    const c = CASES_DB.find(x => x.id === caseId);
+    if (!c) return;
+    SoundEngine.playClick();
 
-            // Создаем предмет-кейс и кидаем в инвентарь
-            const caseItem = createInvItem({ id: c.id, weapon: c.name, skin: 'Кейс', type: 'case', rarity: 'common', price: c.price, c1: c.c1, c2: c.c2 });
-            state.inventory.push(caseItem);
-            
-            saveState(); updateTopBar();
-            SoundEngine.playWin('rare');
-            toast(`Кейс "${c.name}" куплен и добавлен в инвентарь!`);
-        }
+    tempBuyCase = c;
+    tempBuyCaseQty = 1;
+
+    openModal(`
+        <button class="modal-close-x" onclick="closeModal()">✕</button>
+        <h3 style="margin-bottom:6px; padding-right:24px;">Покупка: ${c.name}</h3>
+        <div style="font-size:11px; color:var(--text-dim); margin-bottom:12px;">${c.desc}</div>
+        <div style="background:var(--bg-card); padding:14px; border-radius:10px; margin-bottom:14px;">
+            <img src="img/${c.id}.png" alt="${c.name}" style="width:110px; height:85px; object-fit:contain;"
+                 onerror="if(!this.dataset.triedJpg){this.dataset.triedJpg='1';this.src='img/${c.id}.jpg';}else{this.style.display='none';}">
+        </div>
+        ${c.ad ? `
+            <div style="font-size:14px; margin-bottom:16px;">Стоимость: <strong style="color:var(--green-play);">🎬 За просмотр рекламы</strong></div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn-ui green" style="flex:1;" onclick="confirmBuyCase()">ПОДТВЕРДИТЬ</button>
+                <button class="btn-ui red" style="flex:1;" onclick="closeModal()">Отмена</button>
+            </div>
+        ` : `
+            <div style="font-size:14px; margin-bottom:12px;">Цена за 1 шт: <strong style="color:var(--gold);">${c.price} G</strong></div>
+            <div style="display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:14px;">
+                <button class="btn-ui dark" style="width:38px; height:38px; font-size:18px; padding:0;" onclick="changeBuyCaseQty(-1)">-</button>
+                <span id="buyCaseQtyVal" style="font-size:22px; font-weight:900; width:44px;">1</span>
+                <button class="btn-ui dark" style="width:38px; height:38px; font-size:18px; padding:0;" onclick="changeBuyCaseQty(1)">+</button>
+            </div>
+            <div style="font-size:15px; margin-bottom:16px;">Итого: <strong style="color:var(--gold-light);" id="buyCaseTotalVal">${c.price} G</strong></div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn-ui green" style="flex:1;" onclick="confirmBuyCase()">ПОДТВЕРДИТЬ</button>
+                <button class="btn-ui red" style="flex:1;" onclick="closeModal()">Отмена</button>
+            </div>
+        `}
+    `);
+}
+
+function changeBuyCaseQty(delta) {
+    if (!tempBuyCase) return;
+    let q = tempBuyCaseQty + delta;
+    if (q < 1) q = 1;
+    if (q > 99) q = 99;
+    tempBuyCaseQty = q;
+    document.getElementById('buyCaseQtyVal').textContent = q;
+    document.getElementById('buyCaseTotalVal').textContent = (tempBuyCase.price * q).toFixed(2) + ' G';
+}
+
+async function confirmBuyCase() {
+    const c = tempBuyCase;
+    const qty = tempBuyCaseQty;
+    if (!c) return;
+
+    if (c.ad) {
+        closeModal();
+        const ok = await showSafeVKAd('reward');
+        if (!ok) { toast('Реклама не досмотрена.'); return; }
+        const caseItem = createInvItem({ id: c.id, weapon: c.name, skin: 'Кейс', type: 'case', rarity: 'common', price: c.price, c1: c.c1, c2: c.c2 });
+        state.inventory.push(caseItem);
+        saveState(); updateTopBar();
+        SoundEngine.playWin('rare');
+        toast(`Кейс "${c.name}" добавлен в инвентарь!`);
+        return;
+    }
+
+    const total = c.price * qty;
+    if (state.gold < total) { 
+        toast('Недостаточно голды!'); 
+        return; 
+    }
+
+    state.gold -= total;
+    for (let i = 0; i < qty; i++) {
+        const caseItem = createInvItem({ id: c.id, weapon: c.name, skin: 'Кейс', type: 'case', rarity: 'common', price: c.price, c1: c.c1, c2: c.c2 });
+        state.inventory.push(caseItem);
+    }
+
+    saveState(); updateTopBar(); closeModal();
+    SoundEngine.playWin('rare');
+    toast(`Куплено ${qty} шт. "${c.name}" за ${total} G!`);
+}
+
 
         /* ==========================================================================
            6. ИНВЕНТАРЬ (ОТКРЫТИЕ КЕЙСОВ, ЭКИПИРОВКА, ПРОДАЖА)
@@ -1350,29 +1511,31 @@
 
 
         function openBuyModal(dbId) {
-            const item = ITEMS_DB.find(i => i.id === dbId);
-            if (!item) return;
+    const item = ITEMS_DB.find(i => i.id === dbId);
+    if (!item) return;
 
-            openModal(`
-                <h3 style="margin-bottom:10px;">Покупка: ${item.weapon}</h3>
-                <div style="background:var(--bg-card); padding:14px; border-radius:10px; margin-bottom:14px;">
-                    <div style="width:120px; margin:0 auto;">${renderItemVisual(item)}</div>
-                </div>
-                <div style="font-size:14px; margin-bottom:14px;">Цена за 1 шт: <strong style="color:var(--gold);">${item.price} G</strong></div>
-                <div style="display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:16px;">
-                    <button class="btn-ui dark" onclick="changeBuyQty(-1)">-</button>
-                    <span id="buyQtyVal" style="font-size:20px; font-weight:900; width:40px;">1</span>
-                    <button class="btn-ui dark" onclick="changeBuyQty(1)">+</button>
-                </div>
-                <div style="font-size:14px; margin-bottom:16px;">Итого: <strong style="color:var(--gold-light);" id="buyTotalVal">${item.price} G</strong></div>
-                <div style="display:flex; gap:8px;">
-                    <button class="btn-ui green" style="flex:1;" onclick="confirmBuy('${item.id}')">КУПИТЬ</button>
-                    <button class="btn-ui red" style="flex:1;" onclick="closeModal()">Отмена</button>
-                </div>
-            `);
-            window.tempBuyItem = item;
-            window.tempBuyQty = 1;
-        }
+    openModal(`
+        <button class="modal-close-x" onclick="closeModal()">✕</button>
+        <h3 style="margin-bottom:10px; padding-right:24px;">Покупка: ${item.weapon}</h3>
+        <div style="background:var(--bg-card); padding:14px; border-radius:10px; margin-bottom:14px;">
+            <div style="width:120px; margin:0 auto;">${renderItemVisual(item)}</div>
+        </div>
+        <div style="font-size:14px; margin-bottom:14px;">Цена за 1 шт: <strong style="color:var(--gold);">${item.price} G</strong></div>
+        <div style="display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:16px;">
+            <button class="btn-ui dark" style="width:38px; height:38px; font-size:18px; padding:0;" onclick="changeBuyQty(-1)">-</button>
+            <span id="buyQtyVal" style="font-size:20px; font-weight:900; width:40px;">1</span>
+            <button class="btn-ui dark" style="width:38px; height:38px; font-size:18px; padding:0;" onclick="changeBuyQty(1)">+</button>
+        </div>
+        <div style="font-size:14px; margin-bottom:16px;">Итого: <strong style="color:var(--gold-light);" id="buyTotalVal">${item.price} G</strong></div>
+        <div style="display:flex; gap:8px;">
+            <button class="btn-ui green" style="flex:1;" onclick="confirmBuy('${item.id}')">ПОДТВЕРДИТЬ</button>
+            <button class="btn-ui red" style="flex:1;" onclick="closeModal()">Отмена</button>
+        </div>
+    `);
+    window.tempBuyItem = item;
+    window.tempBuyQty = 1;
+}
+
 
         function changeBuyQty(delta) {
             let q = window.tempBuyQty + delta;
@@ -1942,37 +2105,42 @@
         }
 
         async function openLeadersModal() {
-            const myInvSum = state.inventory.reduce((s, i) => s + i.price, 0);
-            const myScore = Math.round(state.gold + myInvSum);
-            
-            if (isVKEnv && window.vkBridge) {
-                try {
-                    await window.vkBridge.send('VKWebAppSetLeaderboardScore', { user_result: myScore });
-                    await window.vkBridge.send('VKWebAppShowLeaderBoardBox', { user_result: myScore });
-                } catch (e) { toast('Ошибка рейтинга ВК.'); }
-            } else {
-                const bots = [
-                    { name: 'BOGnear [ТВИНК]', score: 119100 },
-                    { name: 'Nikita [OCHOBA]', score: 68200 },
-                    { name: 'AXLEBOLT_PRO', score: 45300 },
-                    { name: (document.getElementById('playerName').textContent || 'Player') + ' (ВЫ)', score: myScore, me: true },
-                    { name: 'StandoffKing', score: 12400 }
-                ].sort((a, b) => b.score - a.score);
-                
-                openModal(`
-                    <h3 style="color:var(--gold-light); margin-bottom:12px;">🏆 ЛИДЕРЫ (ДЕМО)</h3>
-                    <div style="display:flex; flex-direction:column; gap:6px; text-align:left; margin-bottom:14px;">
-                        ${bots.map((b, i) => `
-                            <div style="display:flex; justify-content:space-between; padding:8px 10px; border-radius:7px; ${b.me ? 'background:rgba(245,185,66,0.15); border:1px solid var(--gold);' : 'background:var(--bg-card);'}">
-                                <span style="font-weight:800;">#${i + 1} ${b.name}</span>
-                                <span style="color:var(--gold-light); font-weight:900;">${b.score.toLocaleString('ru-RU')} G</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <button class="btn-ui dark" style="width:100%;" onclick="closeModal()">Закрыть</button>
-                `);
-            }
+    const myInvSum = state.inventory.reduce((s, i) => s + i.price, 0);
+    const myScore = Math.round(state.gold + myInvSum);
+    
+    if (isVKEnv && window.vkBridge) {
+        try {
+            // Достаточно одного вызова: он сам обновит рекорд и откроет окно лидеров
+            await window.vkBridge.send('VKWebAppShowLeaderBoardBox', { 
+                user_result: myScore 
+            });
+        } catch (e) { 
+            console.warn('[VK Leaderboard]', e);
+            toast('Таблица лидеров недоступна.'); 
         }
+    } else {
+        const bots = [
+            { name: 'BOGnear [ТВИНК]', score: 119100 },
+            { name: 'Nikita [OCHOBA]', score: 68200 },
+            { name: 'AXLEBOLT_PRO', score: 45300 },
+            { name: (document.getElementById('playerName').textContent || 'Player') + ' (ВЫ)', score: myScore, me: true },
+            { name: 'StandoffKing', score: 12400 }
+        ].sort((a, b) => b.score - a.score);
+        
+        openModal(`
+            <h3 style="color:var(--gold-light); margin-bottom:12px;">🏆 ЛИДЕРЫ (ДЕМО)</h3>
+            <div style="display:flex; flex-direction:column; gap:6px; text-align:left; margin-bottom:14px;">
+                ${bots.map((b, i) => `
+                    <div style="display:flex; justify-content:space-between; padding:8px 10px; border-radius:7px; ${b.me ? 'background:rgba(245,185,66,0.15); border:1px solid var(--gold);' : 'background:var(--bg-card);'}">
+                        <span style="font-weight:800;">#${i + 1} ${b.name}</span>
+                        <span style="color:var(--gold-light); font-weight:900;">${b.score.toLocaleString('ru-RU')} G</span>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="btn-ui dark" style="width:100%;" onclick="closeModal()">Закрыть</button>
+        `);
+    }
+}
 
         let chatTab = 'general';
         const chatHistory = [
@@ -2090,13 +2258,14 @@
         function goScreen(name) {
             SoundEngine.playClick();
             if (name === 'range') {
-				hideBottomBanner(); // Убираем баннер, чтобы не мешал стрелять
-			} else {
-				stopRangeTimer();
-				if (activeBannerHeight === 0) {
-					showBottomBanner(); // Возвращаем баннер на всех остальных экранах
-				}
+			hideBottomBanner(); // Убираем баннер в тире
+		} else {
+			stopRangeTimer();
+			if (!isBannerVisible) {
+				showBottomBanner(); // Вызываем только если баннер скрыт (с защитой от спама внутри)
 			}
+		}
+
             
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
